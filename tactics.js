@@ -167,8 +167,9 @@ class TacticsGame {
         const t = this.time;
         this.players.forEach((player, i) => {
             const pos = this.getPositionOnPath(player.path, t);
-            player.x = this.avoidDefenders(player, pos, t).x;
-            player.y = this.avoidDefenders(player, pos, t).y;
+            const avoidedPos = this.avoidDefenders(player, pos, t);
+            player.x = avoidedPos.x;
+            player.y = avoidedPos.y;
         });
 
         this.defenders.forEach(defender => {
@@ -232,9 +233,13 @@ class TacticsGame {
             const from = this.getPositionOnPath(this.players[activePass.fromIndex].path, activePass.startTime);
             let to;
             if (activePass.leadFactor) {
+                // 计算接球者到达目标位置的时间：传球结束时接球者在某位置，提前量意味着球会飞到接球者继续跑动后的位置
+                // leadFactor = 1.3 表示球飞到接球者从传球开始到结束跑动距离的 30% 前方
                 const end = this.getPositionOnPath(this.players[activePass.toIndex].path, activePass.endTime);
                 const start = this.getPositionOnPath(this.players[activePass.toIndex].path, activePass.startTime);
-                to = { x: end.x + (end.x - start.x) * (activePass.leadFactor - 1), y: end.y + (end.y - start.y) * (activePass.leadFactor - 1) };
+                const runDx = end.x - start.x;
+                const runDy = end.y - start.y;
+                to = { x: end.x + runDx * (activePass.leadFactor - 1), y: end.y + runDy * (activePass.leadFactor - 1) };
             } else {
                 to = this.getPositionOnPath(this.players[activePass.toIndex].path, activePass.endTime);
             }
