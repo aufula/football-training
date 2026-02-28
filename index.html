@@ -51,10 +51,14 @@
             border-radius: 8px;
             position: relative;
             overflow: hidden;
+            width: 100%;
+            height: 500px;
         }
 
         #tacticsCanvas {
             display: block;
+            width: 100%;
+            height: 100%;
         }
 
         .control-panel {
@@ -286,6 +290,18 @@
                 </div>
 
                 <div class="legend">
+                    <h3 style="color:#27ae60;font-size:14px;margin-bottom:10px;padding-left:8px;border-left:3px solid #27ae60;">⚙️ 显示设置</h3>
+                    <div class="legend-item">
+                        <input type="checkbox" id="showAttackerThoughts" checked style="margin-right:8px;">
+                        <label for="showAttackerThoughts" style="font-size:13px;cursor:pointer;">显示进攻方想法</label>
+                    </div>
+                    <div class="legend-item">
+                        <input type="checkbox" id="showDefenderThoughts" style="margin-right:8px;">
+                        <label for="showDefenderThoughts" style="font-size:13px;cursor:pointer;">显示防守方想法</label>
+                    </div>
+                </div>
+
+                <div class="legend">
                     <div class="legend-item">
                         <div class="legend-color player"></div>
                         <span>进攻球员 (蓝点)</span>
@@ -326,6 +342,7 @@
         </div>
     </div>
 
+    <script src="tactics-config.js"></script>
     <script src="tactics.js"></script>
 </body>
 </html>
