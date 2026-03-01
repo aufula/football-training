@@ -107,7 +107,7 @@ const TACTICS_CONFIG = {
     },
     'third-man': {
         name: '第三人配合 (Third Man Run)',
-        category: 'basic',
+        category: 'intermediate',
         players: [
             {
                 id: 0, name: 'A',

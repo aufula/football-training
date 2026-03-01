@@ -340,13 +340,33 @@ class TacticsGame {
     drawPitch() {
         const ctx = this.ctx, w = this.canvasWidth, h = this.canvasHeight;
         ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2;
-        
+
         // 横向球场：左右进攻
         ctx.strokeRect(20, 20, w - 40, h - 40);
         ctx.beginPath(); ctx.moveTo(w / 2, 20); ctx.lineTo(w / 2, h - 20); ctx.stroke();
         ctx.beginPath(); ctx.arc(w / 2, h / 2, 40, 0, Math.PI * 2); ctx.stroke();
         ctx.strokeRect(20, h / 2 - 60, 60, 120); ctx.strokeRect(w - 80, h / 2 - 60, 60, 120);
         ctx.strokeRect(20, h / 2 - 100, 120, 200); ctx.strokeRect(w - 140, h / 2 - 100, 120, 200);
+
+        // 添加球门区域（右侧为进攻方向）
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fillRect(w - 25, h / 2 - 70, 8, 140);
+
+        // 进攻方向箭头
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.beginPath();
+        ctx.moveTo(w * 0.65, h / 2 - 15);
+        ctx.lineTo(w * 0.75, h / 2);
+        ctx.lineTo(w * 0.65, h / 2 + 15);
+        ctx.lineTo(w * 0.68, h / 2);
+        ctx.closePath();
+        ctx.fill();
+
+        // 添加"进攻方向"文字提示
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.font = '12px Microsoft YaHei';
+        ctx.textAlign = 'center';
+        ctx.fillText('进攻 →', w * 0.7, h / 2 - 20);
     }
 
     drawPlayer(x, y, name) {
