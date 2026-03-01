@@ -306,6 +306,32 @@ const TACTICS_CONFIG = {
             { fromIndex: 1, toIndex: 2, startTime: 0.25, endTime: 0.4 },
             { fromIndex: 2, toIndex: 0, startTime: 0.55, endTime: 0.7, leadFactor: 1.1 }
         ]
+    },
+    'cross-run': {
+        name: '交叉换位跑动 (Cross Run)',
+        category: 'basic',
+        players: [
+            {
+                id: 0, name: 'A',
+                path: [{ x: 0.2, y: 0.65, t: 0 }, { x: 0.35, y: 0.6, t: 0.3 }, { x: 0.5, y: 0.5, t: 0.5 }, { x: 0.65, y: 0.45, t: 0.7 }, { x: 0.8, y: 0.4, t: 1 }],
+                thoughts: [{ t: 0, text: '持球' }, { t: 0.25, text: '给 B' }, { t: 0.45, text: '交叉跑！' }, { t: 0.65, text: '接球！' }]
+            },
+            {
+                id: 1, name: 'B',
+                path: [{ x: 0.5, y: 0.35, t: 0 }, { x: 0.45, y: 0.4, t: 0.3 }, { x: 0.4, y: 0.5, t: 0.5 }, { x: 0.5, y: 0.6, t: 0.7 }, { x: 0.6, y: 0.65, t: 1 }],
+                thoughts: [{ t: 0, text: '接应' }, { t: 0.25, text: '回做！' }, { t: 0.45, text: '交叉！' }, { t: 0.65, text: '前插！' }]
+            }
+        ],
+        defenders: [
+            { id: 0, name: '防守',
+                path: [{ x: 0.45, y: 0.5, t: 0 }, { x: 0.48, y: 0.52, t: 0.35 }, { x: 0.52, y: 0.55, t: 0.6 }, { x: 0.6, y: 0.5, t: 0.85 }, { x: 0.7, y: 0.45, t: 1 }],
+                thoughts: [{ t: 0, text: '盯 A' }, { t: 0.3, text: 'B 接球' }, { t: 0.5, text: '交叉了！' }, { t: 0.7, text: '跟谁？' }]
+            }
+        ],
+        passes: [
+            { fromIndex: 0, toIndex: 1, startTime: 0.25, endTime: 0.4 },
+            { fromIndex: 1, toIndex: 0, startTime: 0.55, endTime: 0.7 }
+        ]
     }
 };
 
@@ -320,5 +346,6 @@ const TACTIC_EXPLANATIONS = {
     'diagonal-run': { title: '斜线前插 (Diagonal Run)', content: '<p>前插者从防守侧后方盲区启动，爆发加速 45 度斜插两后卫之间，人到球到不减速。</p>' },
     'wing-overlap': { title: '边路套边 (Wing Overlap)', content: '<p>边锋内切带球向中路，边后卫从外线高速套上，传向边卫身后，下底传中或倒三角。</p>' },
     'through-ball': { title: '直塞身后 (Through Ball)', content: '<p>前锋在防守侧后方游弋（弧线跑位），传球瞬间全力启动，直塞球打穿防线身后。</p>' },
-    'rotation': { title: '拉玛西亚轮转 (La Masia Rotation)', content: '<p>A 传 B 后前插，B 做球给 C 后跑位，C 回撤做球给反插的 A，多人在局部形成轮转换位。</p>' }
+    'rotation': { title: '拉玛西亚轮转 (La Masia Rotation)', content: '<p>A 传 B 后前插，B 做球给 C 后跑位，C 回撤做球给反插的 A，多人在局部形成轮转换位。</p>' },
+    'cross-run': { title: '交叉换位跑动 (Cross Run)', content: '<p>两人相向跑动形成交叉，一脚回做后前插；口诀：交叉换位谁空接谁，传完就跑别站着等！</p>' }
 };

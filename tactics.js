@@ -4,6 +4,7 @@ class TacticsGame {
         this.canvas = document.getElementById('tacticsCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.currentTactic = null;
+        this.currentVariantIndex = 0;
         this.isPlaying = false;
         this.animationFrame = null;
         this.time = 0;
@@ -70,6 +71,7 @@ class TacticsGame {
     setupDisplaySettings() {
         const attCheckbox = document.getElementById('showAttackerThoughts');
         const defCheckbox = document.getElementById('showDefenderThoughts');
+        
         if (attCheckbox) attCheckbox.addEventListener('change', (e) => {
             this.showAttackerThoughts = e.target.checked;
             this.draw();
@@ -82,9 +84,11 @@ class TacticsGame {
 
     selectTactic(name) {
         this.currentTactic = name;
+        this.currentVariantIndex = 0;
         this.reset();
         this.setupTactic(name);
         this.updateExplanation(name);
+        this.updateVariantButtons(name);
         if (!this.isPlaying) this.togglePlay();
     }
 
@@ -92,24 +96,28 @@ class TacticsGame {
         const config = TACTICS_CONFIG[name];
         if (!config) return;
 
+        // 支持 variants 数组或直接配置
+        const variant = config.variants ? config.variants[this.currentVariantIndex] : config;
+        const variantName = config.variants ? config.variants[this.currentVariantIndex].name : '默认';
+
         const w = this.canvasWidth;
         const h = this.canvasHeight;
 
-        this.players = config.players.map(p => ({
+        this.players = variant.players.map(p => ({
             id: p.id, name: p.name,
             x: p.path[0].x * w, y: p.path[0].y * h,
             path: p.path.map(pt => ({ x: pt.x * w, y: pt.y * h, t: pt.t })),
             thoughts: p.thoughts
         }));
 
-        this.defenders = config.defenders.map(d => ({
+        this.defenders = variant.defenders.map(d => ({
             id: d.id, name: d.name,
             x: d.path[0].x * w, y: d.path[0].y * h,
             path: d.path.map(pt => ({ x: pt.x * w, y: pt.y * h, t: pt.t })),
             thoughts: d.thoughts
         }));
 
-        this.passes = config.passes;
+        this.passes = variant.passes;
         this.playerTrails.clear();
         this.defenderTrails = [];
         this.ballTrail = [];
@@ -118,10 +126,46 @@ class TacticsGame {
         this.rhythmPhase = 'slow';
     }
 
+    updateVariantButtons(name) {
+        const config = TACTICS_CONFIG[name];
+        const container = document.getElementById('variantList');
+        const section = document.getElementById('variantSection');
+        if (!container || !section) return;
+        
+        if (config && config.variants && config.variants.length > 1) {
+            container.innerHTML = config.variants.map((v, i) => 
+                `<button class="variant-btn${i === 0 ? ' active' : ''}" data-variant="${i}">${i + 1}. ${v.name}</button>`
+            ).join('');
+            
+            // 动态绑定事件
+            container.querySelectorAll('.variant-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    container.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    this.currentVariantIndex = parseInt(e.target.dataset.variant);
+                    this.reset();
+                    // 自动播放
+                    if (!this.isPlaying) {
+                        this.isPlaying = true;
+                        document.getElementById('playBtn').textContent = '⏸️ 暂停';
+                        this.animate();
+                    }
+                });
+            });
+            
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+        }
+    }
+
     updateExplanation(name) {
+        const config = TACTICS_CONFIG[name];
+        const variant = config && config.variants ? config.variants[this.currentVariantIndex] : config;
         const exp = TACTIC_EXPLANATIONS[name];
+        const variantName = config && config.variants ? config.variants[this.currentVariantIndex].name : '';
         if (exp) {
-            document.getElementById('explanation').innerHTML = `<h3>${exp.title}</h3>${exp.content}`;
+            document.getElementById('explanation').innerHTML = `<h3>${exp.title} - ${variantName}</h3>${exp.content}`;
         }
     }
 
@@ -142,8 +186,10 @@ class TacticsGame {
         this.defenderTrails = [];
         this.rhythmPhase = 'slow';
         document.getElementById('playBtn').textContent = '▶️ 播放';
-        if (this.currentTactic) this.setupTactic(this.currentTactic);
-        else {
+        if (this.currentTactic) {
+            this.setupTactic(this.currentTactic);
+            this.updateExplanation(this.currentTactic);
+        } else {
             const w = this.canvasWidth, h = this.canvasHeight;
             this.players = [{ id: 0, name: '球员', x: w * 0.3, y: h * 0.5, path: [{ x: w * 0.3, y: h * 0.5, t: 0 }] }];
             this.defenders = [];
@@ -294,6 +340,8 @@ class TacticsGame {
     drawPitch() {
         const ctx = this.ctx, w = this.canvasWidth, h = this.canvasHeight;
         ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2;
+        
+        // 横向球场：左右进攻
         ctx.strokeRect(20, 20, w - 40, h - 40);
         ctx.beginPath(); ctx.moveTo(w / 2, 20); ctx.lineTo(w / 2, h - 20); ctx.stroke();
         ctx.beginPath(); ctx.arc(w / 2, h / 2, 40, 0, Math.PI * 2); ctx.stroke();
